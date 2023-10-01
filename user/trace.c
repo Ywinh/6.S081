@@ -3,6 +3,14 @@
 #include "kernel/stat.h"
 #include "user/user.h"
 
+
+//return 0,  -1 for error
+/*int trace(int mask){
+
+    return sys_trace();
+}*/
+
+
 int
 main(int argc, char *argv[])
 {

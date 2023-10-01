@@ -6,6 +6,7 @@
 #include "memlayout.h"
 #include "spinlock.h"
 #include "proc.h"
+#include "sysinfo.h"  //add in lab2 sysinfo
 
 uint64
 sys_exit(void)
@@ -94,4 +95,39 @@ sys_uptime(void)
   xticks = ticks;
   release(&tickslock);
   return xticks;
+}
+//add
+uint64
+sys_trace(void){
+  int n;
+
+  if(argint(0,&n) < 0)
+    return -1;
+  myproc()->sys_num = n;//读取参数中的跟踪掩码
+  return 0;
+}
+
+//add
+uint64
+sys_sysinfo(void){
+  //将一个struct sysinfo从内核复制回用户空间
+  struct sysinfo info;
+  struct proc* p = myproc();
+  uint64 st;//要让st指向用户空间的地址
+
+  /*if(argint(0,&info) < 0)
+    return -1;*/
+  if(argaddr(0,&st) < 0)
+    return -1;
+  
+  //抄的，之前妄想从通过argint读取info参数
+  info.freemem = freemem();
+  info.nproc = num_proc();
+
+  if(copyout(p->pagetable,st,(char*)&info, sizeof(info)) < 0)
+    return -1;
+  
+
+  return 0;
+
 }

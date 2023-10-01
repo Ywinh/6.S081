@@ -280,6 +280,9 @@ fork(void)
   // copy saved user registers.
   *(np->trapframe) = *(p->trapframe);
 
+  //copy mask
+  np->sys_num = np->sys_num;
+
   // Cause fork to return 0 in the child.
   np->trapframe->a0 = 0;
 
@@ -692,4 +695,21 @@ procdump(void)
     printf("%d %s %s", p->pid, state, p->name);
     printf("\n");
   }
+}
+
+
+//add
+//获取系统中的进程数
+uint64
+num_proc(void){
+  struct proc* p;
+  uint64 num = 0;
+
+  for(p=proc; p < &proc[NPROC];p++){
+    //这个地方要上锁吗？proc.h里面说使用state字段要上锁，是这样理解的吗？
+    if(p->state != UNUSED)
+      num++;
+  }
+
+  return num;
 }
